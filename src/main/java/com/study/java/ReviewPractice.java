@@ -23,7 +23,32 @@ public class ReviewPractice {
         }
     }
 
-    // 2.
+    // 2. static - 객체마다 있는 것이 아니라 클래스 자체에 딱 하나
+    static class Counter {
+        static int totalCount = 0;      // static: 모든 Counter 객체가 공유하는 값
+        int myCount = 0;                // non-static : 객체마다 각자 따로 가지는 값
+
+        public void increase() {
+            totalCount++;       // 모든 객체가 이 값을 공유하며 같이 증가시팀
+            myCount++;          // 이 객체만의 값
+        }
+    }
+
+    // 3. final - 한번 정해지면 다시는 못 바꿈
+    // final 클래스 : 더 이상 상속 불가능
+    static final class Circle {
+//        class SmailCircle extends Circle {}   // 이렇게 상속하려 하면 컴파일 에러 발생
+    }
+
+    // 4. 조합해서 자주 쓰는 패턴 - public static final
+    // 어디서든 꺼내 쓸 수 있고, 객체 안만들어도 되고, 절대 안 바뀌는 상수
+    public static final int MAX_USERS = 100;
+
+    // 실행 예시
+    public static void main(String[] args) {
+        // 1) public, private
+        Person p = new Person("철수", 26);
+    }
 }
 
 
