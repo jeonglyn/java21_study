@@ -1,27 +1,6 @@
 package com.study.java;
 
 public class ReviewPractice {
-    // JAVA21 스터디를 하던 도중 내가 접근제어자(public, private, final 등)에 대해
-    // 아무것도 모른다는 것을 느끼게 되었다.
-
-    // 그래서 스터디 진행 도중 접근 제어자에 대해 다시 한번 짚고 넘어가고자 한다
-
-    // 1. public, private
-    // 변수, 메서드, 클래스를 누가 접근할 수 있는가를 정하는 키워드!
-    static class Person {
-        public String name;                 // public : 어디서든 접근이 가능하다 (다른 클래스, 다른 패키지에서도)
-        private int age;                    // private : 이 클래스(Person) 안에서만 접근 가능
-
-        public Person(String name, int age) {
-            this.name = name;
-            this.age = age;
-        }
-
-        public void introduce() {
-            // Person 클래스 내부이므로 private인 age도 자유롭게 사용이 가능하다
-            System.out.println(name + "는 " + age + "살 입니다.");
-        }
-    }
 
     // 2. static - 객체마다 있는 것이 아니라 클래스 자체에 딱 하나
     static class Counter {
@@ -29,7 +8,7 @@ public class ReviewPractice {
         int myCount = 0;                // non-static : 객체마다 각자 따로 가지는 값
 
         public void increase() {
-            totalCount++;       // 모든 객체가 이 값을 공유하며 같이 증가시팀
+            totalCount++;       // 모든 객체가 이 값을 공유하며 같이 증가시킴
             myCount++;          // 이 객체만의 값
         }
     }
@@ -48,6 +27,35 @@ public class ReviewPractice {
     public static void main(String[] args) {
         // 1) public, private
         Person p = new Person("철수", 26);
+
+        System.out.println(p.name); // public이라 외부에서 접근 가능
+//        System.out.println(p.age);  // 컴파일 에러 발생! private 라 Person 클래스 밖에서 접근 불가능함
+
+        p.introduce();                // introduce()가 public이라 호출 가능
+
+
+        // ----- 2) static vs non-static 확인 -----
+        Counter c1 = new Counter();
+        Counter c2 = new Counter();
+
+        c1.increase();
+        c2.increase();
+        c2.increase();
+
+        System.out.println(c1.myCount);          // 1  (c1은 자기 것만 셌음)
+        System.out.println(c2.myCount);          // 2  (c2도 자기 것만 셌음)
+        System.out.println(Counter.totalCount);  // 3  (c1, c2가 공유하는 값이라 합쳐짐)
+
+
+        // ----- 3) final 확인 -----
+        final int MAX_SCORE = 100;
+//         MAX_SCORE = 200;   // 컴파일 에러! final은 재할당 불가능
+        System.out.println(MAX_SCORE);           // 100
+
+
+        // ----- 4) public static final 확인 -----
+        // 객체(AccessModifierPractice)를 만들지 않고도 바로 접근 가능
+        System.out.println(ReviewPractice.MAX_USERS);   // 100
     }
 }
 
