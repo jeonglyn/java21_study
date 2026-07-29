@@ -19,11 +19,11 @@ public class OrderStatusPractice {
     //    -> 조건 : 클래스 레벨에 선언할 것!
 
     // 2. 기본 타입 패턴 매칭
-    //    -> OrderStatus를 받아서 알림 메시지를 반환하는 메시지를 만들어라(createNotification 메서드 생성)
+    //    -> OrderStatus를 받아서 알림 메시지를 반환하는 메시지를 만들어라(getMessage 메서드 생성)
     //    -> 조건 : OrderStatus가 sealed 이므로 default 없이 4가지를 모두 처리
 
     // 3. null 처리
-    //    -> createNotification에 null이 들어올 수 있다고 가정하고, case null로 주문 정보를 찾을 수 없다고 반환할 것
+    //    -> getMessage에 null이 들어올 수 있다고 가정하고, case null로 주문 정보를 찾을 수 없다고 반환할 것
 
     // 4. Guard Pattern (when) 활용
     //    -> 배송이 시작된 지 오래된 주문은 다른 메시지를 보여줘야함.
@@ -32,7 +32,7 @@ public class OrderStatusPractice {
     // 5. Record Pattern으로 구조 분해
 
 
-    // step1. 타입 계층 설계
+
     sealed interface OrderStatus permits Pending, Shipping, Delivered, Cancelled {};
 
     record Pending() implements OrderStatus {}
@@ -40,10 +40,46 @@ public class OrderStatusPractice {
     record Delivered(String deliveredDate) implements OrderStatus {}
     record Cancelled(String reason) implements OrderStatus {}
 
-    // step2. 기본 타입 패턴 매칭
+    // 기본 타입 패턴 매칭
+    public static String getMessage(OrderStatus orderStatus) {
+        return switch (orderStatus) {
+            case null -> "주문 정보를 찾을 수 없습니다!";
+            case Pending p -> "결제를 기다리고 있습니다!";
+//            case Shipping s when s.trackingNumber == "UNKNOWN" -> "운송장 번호가 아직 등록되지 않았습니다.";
+            case Shipping s when s.trackingNumber.equals("UNKNOWN") -> "운송장 번호가 아직 등록되지 않았습니다.";
+            case Shipping s -> "배송이 시작되었습니다. 운송장번호: " + s.trackingNumber;
+            case Delivered d -> "완료날짜 " + d.deliveredDate + "에 배송이 완료되었습니다.";
+            case Cancelled c -> "주문이 취소되었습니다. 사유: " + c.reason;
+        };
+    }
 
+    // Record 패턴
+    public static String getRecordType(OrderStatus orderStatus) {
+        return switch (orderStatus) {
+            case null -> "주문 정보를 찾을 수 없습니다!";
+            case Pending() -> "결제를 기다리고 있습니다!";
+
+            // Shipping(String trackingNumber) -> 이렇게 쓰면
+            // s.trackingNumber 대신 trackingNumber라는 변수로 바로 꺼내 쓸 수 있음
+            case Shipping(String trackingNumber) when trackingNumber.equals("UNKNOWN")
+                    -> "운송장 번호가 아직 등록되지 않았습니다.";
+            case Shipping(String trackingNumber)
+                    -> "배송이 시작되었습니다. 운송장번호: " + trackingNumber;
+
+            case Delivered(String deliveredDate)
+                    -> "완료날짜 " + deliveredDate + "에 배송이 완료되었습니다.";
+
+            case Cancelled(String reason)
+                    -> "주문이 취소되었습니다. 사유: " + reason;
+        };
+    }
 
     public static void main(String[] args) {
-
+        System.out.println(getMessage(new Pending()));
+        System.out.println(getMessage(new Shipping("1234567890")));
+        System.out.println(getMessage(new Shipping("UNKNOWN")));
+        System.out.println(getMessage(new Delivered("2026-07-29")));
+        System.out.println(getMessage(new Cancelled("고객 변심")));
+        System.out.println(getMessage(null));
     }
 }
